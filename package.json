@@ -1,0 +1,24 @@
+{
+  "name": "dials_javascript_parser",
+  "version": "0.0.1",
+  "description": "Parse DIALS objects into javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toastisme/dials_javascript_parser.git"
+  },
+  "keywords": [
+    "dials",
+    "javascript",
+    "parser"
+  ],
+  "author": "David McDonagh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/toastisme/dials_javascript_parser/issues"
+  },
+  "homepage": "https://github.com/toastisme/dials_javascript_parser#readme"
+}
