@@ -1,4 +1,4 @@
-import { deserialize } from "@ygoe/msgpack";
+import { deserialize, decode } from "@ygoe/msgpack";
 
 export class ReflParser{
 
@@ -20,7 +20,7 @@ export class ReflParser{
 		this.filename = null;
 	}
 
-	parseReflectione = (file) => {
+	parseReflectionTableFromMsgpackFile = (file) => {
 		const reader = new FileReader();
 
 		return new Promise((resolve, reject) => {
@@ -44,6 +44,11 @@ export class ReflParser{
 		this.refl = decoded[2]["data"];
 	};
 
+	parseReflectionTableFromJSONMsgpack = (msgpackData) => {
+		const binaryData = Buffer.from(msgpackData, 'base64');
+		const decoded = decode(binaryData);
+		this.refl = decoded[2]["data"];
+	}
 
 	containsColumn(column_name){
 		return (column_name in this.refl);
@@ -170,6 +175,26 @@ export class ReflParser{
 
 	containsXYZObs(){
 		return this.containsColumn("xyzobs.px.value");
+	}
+
+	getXYZObsMm(){
+		return this.getVec3DoubleArray("xyzobs.mm.value");
+	}
+
+	containsXYZObsMm(){
+		return this.containsColumn("xyzobs.mm.value");
+	}
+
+	getCrystalIDs(){
+		return this.getInt32Array("crystalID");
+	}
+
+	getWavelengths(){
+		return this.getDoubleArray("wavelength");
+
+	}
+	containsWavelength(){
+		return this.containsColumn("wavelength");
 	}
 
 	getXYZCal(){

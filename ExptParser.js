@@ -113,7 +113,47 @@ export class ExptParser{
 		if (!(exptID in this.imageData)){
 			this.imageData[exptID] = {};
 		}
+		const decompressedImageData = this.decompressImageData(imageData, imageDimensions)
+		this.imageData[exptID][panelIdx] = decompressedImageData;
+	}
 
+	parseExptImageData(imageData, exptID, imageDimensions){
+		if (!(exptID in this.imageData)){
+			this.imageData[exptID] = {};
+		}
+		console.assert(imageData.length === imageDimensions.length);
+		for (let panelIdx = 0; panelIdx < imageData.length; panelIdx++){
+			const panelImage = this.decompressImageData(
+				imageData[panelIdx], imageDimensions[panelIdx]);
+			this.imageData[exptID][panelIdx] = panelImage;
+		}
+	}
+
+	decompressImageData(imageData, imageDimensions, dataType="float"){
+		const binary = atob(imageData);
+		const compressedBuffer = new Uint8Array(binary.length);
+		for (let i = 0; i < binary.length; i++) {
+			compressedBuffer[i] = binary.charCodeAt(i);
+		}
+		const decompressedBuffer = pako.inflate(compressedBuffer);
+
+		if (dataType==="float"){
+			const floatArray = new Float64Array(decompressedBuffer.buffer);
+			const array2D = Array.from({ length: imageDimensions[0] }, (_, i) => 
+				floatArray.slice(i * imageDimensions[1], (i + 1) * imageDimensions[1])
+			);
+			return array2D;
+		}
+		else if (dataType=="int"){
+			const intArray = new Int32Array(decompressedBuffer.buffer);
+			const array2D = Array.from({ length: imageDimensions[0] }, (_, i) => 
+				intArray.slice(i * imageDimensions[1], (i + 1) * imageDimensions[1])
+			);
+			return array2D;
+		}
+	}
+
+	getDecompressedImage(imageData, imageDimensions){
 		const binary = atob(imageData);
 		const compressedBuffer = new Uint8Array(binary.length);
 		for (let i = 0; i < binary.length; i++) {
@@ -124,7 +164,8 @@ export class ExptParser{
 		const array2D = Array.from({ length: imageDimensions[0] }, (_, i) => 
 			floatArray.slice(i * imageDimensions[1], (i + 1) * imageDimensions[1])
 		);
-		this.imageData[exptID][panelIdx] = array2D;
+		return array2D
+
 	}
 
 	getImageFilenames(){
