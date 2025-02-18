@@ -174,23 +174,23 @@ export class ReflParser{
 	}
 
 	isSummationIntegrated(flag){
-		return flag & (1 << 8) === (1 << 8)
+		return (flag & (1 << 8)) === (1 << 8)
 	}
 
 	isPrfIntegrated(flag){
-		return flag & (1 << 9) === (1 << 9)
+		return (flag & (1 << 9)) === (1 << 9)
 	}
 
 	isIndexed(flag){
-		return flag & (1 << 2) === (1 << 2)
+		return (flag & (1 << 2)) === (1 << 2)
 	}
 
 	isObserved(flag){
-		return flag & (1 << 1) === (1 << 1)
+		return (flag & (1 << 1)) === (1 << 1)
 	}
 
 	isPredicted(flag){
-		return flag & (1 << 0) === (1 << 0)
+		return (flag & (1 << 0)) === (1 << 0)
 	}
 
 
