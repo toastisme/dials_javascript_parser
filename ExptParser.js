@@ -153,21 +153,6 @@ export class ExptParser{
 		}
 	}
 
-	getDecompressedImage(imageData, imageDimensions){
-		const binary = atob(imageData);
-		const compressedBuffer = new Uint8Array(binary.length);
-		for (let i = 0; i < binary.length; i++) {
-			compressedBuffer[i] = binary.charCodeAt(i);
-		}
-		const decompressedBuffer = pako.inflate(compressedBuffer);
-		const floatArray = new Float64Array(decompressedBuffer.buffer);
-		const array2D = Array.from({ length: imageDimensions[0] }, (_, i) => 
-			floatArray.slice(i * imageDimensions[1], (i + 1) * imageDimensions[1])
-		);
-		return array2D
-
-	}
-
 	getImageFilenames(){
 		return this.exptJSON["imageset"][0]["template"];
 	}

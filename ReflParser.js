@@ -169,6 +169,31 @@ export class ReflParser{
 		return this.getUint32Array("panel");
 	}
 
+	getFlags(){
+		return this.getUint32Array("flags")
+	}
+
+	isSummationIntegrated(flag){
+		return flag & (1 << 8) === (1 << 8)
+	}
+
+	isPrfIntegrated(flag){
+		return flag & (1 << 9) === (1 << 9)
+	}
+
+	isIndexed(flag){
+		return flag & (1 << 2) === (1 << 2)
+	}
+
+	isObserved(flag){
+		return flag & (1 << 1) === (1 << 1)
+	}
+
+	isPredicted(flag){
+		return flag & (1 << 0) === (1 << 0)
+	}
+
+
 	getXYZObs(){
 		return this.getVec3DoubleArray("xyzobs.px.value");
 	}
