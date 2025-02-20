@@ -216,10 +216,18 @@ export class ReflParser{
 
 	getWavelengths(){
 		return this.getDoubleArray("wavelength");
-
 	}
-	containsWavelength(){
+
+	containsWavelengths(){
 		return this.containsColumn("wavelength");
+	}
+
+	getCalculatedWavelengths(){
+		return this.getDoubleArray("wavelength_cal");
+	}
+
+	containsCalculatedWavelengths(){
+		return this.containsColumn("wavelength_cal");
 	}
 
 	getXYZCal(){
