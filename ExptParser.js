@@ -95,10 +95,19 @@ export class ExptParser{
 		return false;
 	}
 
+	static isExptJSON(data){
+		try{
+			return data["__id__"] == "ExperimentList";
+
+		}catch(ex){
+			return false;
+		}
+	}
+
 	clearExperiment(){
 		this.exptJSON = null;
 		this.filename = null;
-		this.experiments.forEach(experiment => experiment.clearExperiment());
+		Object.values(this.experiments).forEach(experiment => experiment.clearExperiment());
 		this.experiments = {};
 		this.crystals = {};
 	}
