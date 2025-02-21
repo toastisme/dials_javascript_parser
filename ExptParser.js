@@ -687,7 +687,7 @@ export class ExptParser{
 
 	getDetectorPanelCorners(exptIdx, idx){
 
-		const vecs = this.getPanelDataByIdx(exptIdx, idx);
+		const vecs = this.getDetectorPanelDataByIdx(exptIdx, idx);
 
 		// Corners
 		var c1 = vecs["origin"].clone();
@@ -698,7 +698,7 @@ export class ExptParser{
 	}
 
 	getDetectorPanelNormal(exptIdx, idx){
-		const vecs = this.getPanelDataByIdx(exptIdx, idx);
+		const vecs = this.getDetectorPanelDataByIdx(exptIdx, idx);
 		return vecs["fastAxis"].cross(vecs["slowAxis"]).normalize();
 
 	}
