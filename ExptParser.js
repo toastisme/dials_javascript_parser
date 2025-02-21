@@ -678,7 +678,7 @@ export class ExptParser{
 	}
 
 	getDetectorPanelDataByIdx(exptIdx, idx){
-		return this.experiments[exptIdx].detectorData[idx];
+		return this.experiments[exptIdx].detectorPanelData[idx];
 	}
 
 	getDetectorPanelName(exptIdx, idx){
@@ -704,7 +704,7 @@ export class ExptParser{
 	}
 
 	getDetectorPanelIdxByName(exptIdx, name){
-		const detectorData = this.experiments[exptIdx].detectorData;
+		const detectorData = this.experiments[exptIdx].detectorPanelData;
 		for (let i = 0; i < detectorData.length; i++){
 			if (detectorData[i].name === name){
 				return i;
@@ -715,7 +715,7 @@ export class ExptParser{
 	}
 
 	getDetectorPanelDataByName(exptIdx, name){
-		const detectorData = this.experiments[exptIdx].detectorData;
+		const detectorData = this.experiments[exptIdx].detectorPanelData;
 		for (let i = 0; i < detectorData.length; i++){
 			if (detectorData[i].name === name){
 				return detectorData[i];
@@ -733,7 +733,7 @@ export class ExptParser{
 	}
 
 	getDetectorPanelSize(exptIdx, idx){
-		return this.experiments[exptIdx].detectorData[idx]["pxs"]
+		return this.experiments[exptIdx].detectorPanelData[idx]["pxs"]
 	}
 
 	getBeamDirection(idx){
