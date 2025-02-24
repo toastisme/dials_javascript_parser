@@ -246,15 +246,17 @@ export class ExptParser{
 			var scaledSa = sa.clone().multiplyScalar(panelSize.y);
 
 			let centroid = o.clone();
-			centroid.add(fa.clone().multiplyScalar(.5));
-			centroid.add(sa.clone().multiplyScalar(.5));
+			centroid.add(scaledFa.clone().multiplyScalar(.5));
+			centroid.add(scaledSa.clone().multiplyScalar(.5));
 
 			detectorPanelData.push({
 				"panelSize" : panelSize,
 				"pxSize" : pxSize,
 				"pxs" : pxs,
-				"fastAxis" : scaledFa,
-				"slowAxis" : scaledSa,
+				"fastAxis" : fa,
+				"slowAxis" : sa,
+				"scaledFastAxis" : scaledFa,
+				"scaledSlowAxis" : scaledSa,
 				"origin" : o,
 				"dMatrix" : dMatrix,
 				"centroid": centroid,
