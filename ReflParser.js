@@ -238,6 +238,14 @@ export class ReflParser{
 		return this.containsColumn("xyzcal.px");
 	}
 
+	getXYZCalMm(){
+		return this.getVec3DoubleArray("xyzcal.mm");
+	}
+
+	containsXYZCalMm(){
+		return this.containsColumn("xyzcal.mm");
+	}
+
 	containsSummationIntensities(){
 		return this.containsColumn("intensity.sum.value");
 	}
