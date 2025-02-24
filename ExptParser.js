@@ -242,8 +242,8 @@ export class ExptParser{
 				elems
 			)
 
-			fa.multiplyScalar(panelSize.x);
-			sa.multiplyScalar(panelSize.y);
+			var scaledFa = fa.clone().multiplyScalar(panelSize.x);
+			var scaledSa = sa.clone().multiplyScalar(panelSize.y);
 
 			let centroid = o.clone();
 			centroid.add(fa.clone().multiplyScalar(.5));
@@ -253,8 +253,8 @@ export class ExptParser{
 				"panelSize" : panelSize,
 				"pxSize" : pxSize,
 				"pxs" : pxs,
-				"fastAxis" : fa,
-				"slowAxis" : sa,
+				"fastAxis" : scaledFa,
+				"slowAxis" : scaledSa,
 				"origin" : o,
 				"dMatrix" : dMatrix,
 				"centroid": centroid,
