@@ -7,6 +7,7 @@ export class ReflParser{
 		this.indexedMap = {};
 		this.unindexedMap = {};
 		this.filename = null;
+		this.rawReflData = null;
 	}
 
 	hasReflTable(){
@@ -15,6 +16,7 @@ export class ReflParser{
 
 	clearReflectionTable(){
 		this.refl = null;
+		this.rawReflData = null;
 		this.indexedMap = {};
 		this.unindexedMap = {};
 		this.filename = null;
@@ -42,12 +44,14 @@ export class ReflParser{
 	parseReflectionTableFromMsgpack = (msgpackData) => {
 		const decoded = deserialize(new Uint8Array(msgpackData));
 		this.refl = decoded[2]["data"];
+		this.rawReflData = msgpackData;
 	};
 
 	parseReflectionTableFromJSONMsgpack = (msgpackData) => {
 		const binaryData = Buffer.from(msgpackData, 'base64');
 		const decoded = decode(binaryData);
 		this.refl = decoded[2]["data"];
+		this.rawReflData = msgpackData;
 	}
 
 	containsColumn(column_name){
