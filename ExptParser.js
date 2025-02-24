@@ -126,7 +126,7 @@ export class ExptParser{
 				if (ExptParser.isDIALSExpt(file, reader.result)){
 					this.exptJSON = JSON.parse(reader.result);
 					for (var i = 0; i < this.numExperiments(); i++){
-						this.experiments.push(
+						this.experiments[i] = 
 							new Experiment(
 								this.getImageFilenames(i),
 								this.getCrystalSummary(i),
@@ -135,7 +135,6 @@ export class ExptParser{
 								this.getScan(i),
 								this.getDetectorData(i),
 								this.getImageFilenames(i)
-							)
 						);
 					}
 					this.filename = file.name;
@@ -829,11 +828,7 @@ export class ExptParser{
 	}
 
 	getExptIDs(){
-		var exptIDs=[];
-		for (var i = 0; i < this.experiments.length; i++){
-			exptIDs.push(i);
-		}
-		return exptIDs;
+		return Object.keys(this.experiments);
 	}
 
 	getExptLabels() {
@@ -842,7 +837,7 @@ export class ExptParser{
 											: window.navigator.platform.indexOf("Win") > -1;
 
 		var exptLabels = [];
-		for (var i = 0; i < this.experiments.length; i++) {
+		for (let i in this.experiments) {
 			var label = this.experiments[i].imageFilename;
 			if (isWindows) {
 				exptLabels.push(label.split("\\").pop());
