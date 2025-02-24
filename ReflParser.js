@@ -211,7 +211,7 @@ export class ReflParser{
 	}
 
 	getCrystalIDs(){
-		return this.getInt32Array("crystalID");
+		return this.getInt32Array("crystal_id");
 	}
 
 	getWavelengths(){
