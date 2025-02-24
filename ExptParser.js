@@ -701,7 +701,7 @@ export class ExptParser{
 
 	getDetectorPanelNormal(exptIdx, idx){
 		const vecs = this.getDetectorPanelDataByIdx(exptIdx, idx);
-		return vecs["fastAxis"].cross(vecs["slowAxis"]).normalize();
+		return vecs["scaledFastAxis"].clone().cross(vecs["scaledSlowAxis"].clone()).normalize();
 
 	}
 
