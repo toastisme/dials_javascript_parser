@@ -693,9 +693,9 @@ export class ExptParser{
 
 		// Corners
 		var c1 = vecs["origin"].clone();
-		var c2 = vecs["origin"].clone().add(vecs["fastAxis"]);
-		var c3 = vecs["origin"].clone().add(vecs["fastAxis"]).add(vecs["slowAxis"]);
-		var c4 = vecs["origin"].clone().add(vecs["slowAxis"]);
+		var c2 = vecs["origin"].clone().add(vecs["scaledFastAxis"]);
+		var c3 = vecs["origin"].clone().add(vecs["scaledFastAxis"]).add(vecs["scaledSlowAxis"]);
+		var c4 = vecs["origin"].clone().add(vecs["scaledSlowAxis"]);
 		return [c1, c2, c3, c4];
 	}
 
