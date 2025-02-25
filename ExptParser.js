@@ -850,7 +850,7 @@ export class ExptParser{
 
 	getCrystalIDsMap(){
         // Returns {expt_id : crystal_id}
-        expt_json = self.get_expt_json()
+        expt_json = this.get_expt_json()
 		const crystal_ids = { "-1": "-1" };
 	
 		expt_json.experiment.forEach((expt, idx) => {
