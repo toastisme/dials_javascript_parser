@@ -848,4 +848,20 @@ export class ExptParser{
 		return exptLabels;
 	}
 
+	getCrystalIDsMap(){
+        // Returns {expt_id : crystal_id}
+        expt_json = self.get_expt_json()
+		const crystal_ids = { "-1": "-1" };
+	
+		expt_json.experiment.forEach((expt, idx) => {
+		if ("crystal" in expt) {
+			crystal_ids[idx.toString()] = expt.crystal.toString();
+		} else {
+			crystal_ids[idx.toString()] = "-1";
+		}
+		});
+		
+		return crystal_ids;
+  }
+
 }
