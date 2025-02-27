@@ -1,6 +1,11 @@
 {
   "name": "dials_javascript_parser",
   "version": "0.0.1",
+  "type":  "module",
+  "exports": {
+    "./ExptParser.js" : "./ExptParser.js",
+    "./ReflParser.js" : "./ReflParser.js"
+  },
   "description": "Parse DIALS objects into javascript",
   "main": "index.js",
   "scripts": {
