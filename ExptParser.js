@@ -828,6 +828,14 @@ export class ExptParser{
 	}
 
 	getExptIDs(){
+		let exptIDs = [];
+		this.exptJSON.experiment.forEach((expt, idx) => {
+			exptIDs.push(idx);
+		});
+		return exptIDs;
+	}
+
+	getImagesetIDs(){
 		return Object.keys(this.experiments);
 	}
 
