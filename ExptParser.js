@@ -63,27 +63,42 @@ export class ExptParser{
 		return this.exptJSON != null;
 	}
 
-	static decompressImageData(imageData, imageDimensions, dataType="float"){
+	static decompressImageData(imageData, imageDimensions, dataType="float") {
 		const binary = atob(imageData);
 		const compressedBuffer = new Uint8Array(binary.length);
 		for (let i = 0; i < binary.length; i++) {
 			compressedBuffer[i] = binary.charCodeAt(i);
 		}
 		const decompressedBuffer = pako.inflate(compressedBuffer);
-
-		if (dataType==="float"){
-			const floatArray = new Float64Array(decompressedBuffer.buffer);
-			const array2D = Array.from({ length: imageDimensions[0] }, (_, i) => 
-				floatArray.slice(i * imageDimensions[1], (i + 1) * imageDimensions[1])
-			);
-			return array2D;
+	
+		let TypedArray;
+		if (dataType === "float") {
+			TypedArray = Float64Array;
+		} else if (dataType === "int") {
+			TypedArray = Int32Array;
+		} else {
+			throw new Error("Unsupported data type");
 		}
-		else if (dataType=="int"){
-			const intArray = new Int32Array(decompressedBuffer.buffer);
-			const array2D = Array.from({ length: imageDimensions[0] }, (_, i) => 
-				intArray.slice(i * imageDimensions[1], (i + 1) * imageDimensions[1])
+	
+		const dataArray = new TypedArray(decompressedBuffer.buffer);
+		
+		if (imageDimensions.length === 2) {
+			// 2D array case
+			return Array.from({ length: imageDimensions[0] }, (_, i) => 
+				dataArray.slice(i * imageDimensions[1], (i + 1) * imageDimensions[1])
 			);
-			return array2D;
+		} else if (imageDimensions.length === 3) {
+			// 3D array case
+			return Array.from({ length: imageDimensions[0] }, (_, d) =>
+				Array.from({ length: imageDimensions[1] }, (_, h) =>
+					dataArray.slice(
+						(d * imageDimensions[1] * imageDimensions[2]) + (h * imageDimensions[2]),
+						(d * imageDimensions[1] * imageDimensions[2]) + ((h + 1) * imageDimensions[2])
+					)
+				)
+			);
+		} else {
+			throw new Error("Only 2D and 3D arrays are supported");
 		}
 	}
 
