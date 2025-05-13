@@ -18,16 +18,15 @@ export class Experiment{
 		this.imageData = {};
 	}
 
-	parseImageData(imageData, panelIdx, imageDimensions){
-		const decompressedImageData = ExptParser.decompressImageData(imageData, imageDimensions)
+	parseImageData(imageData, panelIdx){
+		const decompressedImageData = ExptParser.decompressImageData(imageData)
 		this.imageData[panelIdx] = decompressedImageData;
 	}
 
-	parseExptImageData(imageData, imageDimensions){
-		console.assert(imageData.length === imageDimensions.length);
+	parseExptImageData(imageData){
 		for (let panelIdx = 0; panelIdx < imageData.length; panelIdx++){
 			const panelImage = ExptParser.decompressImageData(
-				imageData[panelIdx], imageDimensions[panelIdx]);
+				imageData[panelIdx]);
 			this.imageData[panelIdx] = panelImage;
 		}
 	}
@@ -63,44 +62,6 @@ export class ExptParser{
 		return this.exptJSON != null;
 	}
 
-	static decompressImageData(imageData, imageDimensions, dataType="float") {
-		const binary = atob(imageData);
-		const compressedBuffer = new Uint8Array(binary.length);
-		for (let i = 0; i < binary.length; i++) {
-			compressedBuffer[i] = binary.charCodeAt(i);
-		}
-		const decompressedBuffer = pako.inflate(compressedBuffer);
-	
-		let TypedArray;
-		if (dataType === "float") {
-			TypedArray = Float64Array;
-		} else if (dataType === "int") {
-			TypedArray = Int32Array;
-		} else {
-			throw new Error("Unsupported data type");
-		}
-	
-		const dataArray = new TypedArray(decompressedBuffer.buffer);
-		
-		if (imageDimensions.length === 2) {
-			// 2D array case
-			return Array.from({ length: imageDimensions[0] }, (_, i) => 
-				dataArray.slice(i * imageDimensions[1], (i + 1) * imageDimensions[1])
-			);
-		} else if (imageDimensions.length === 3) {
-			// 3D array case
-			return Array.from({ length: imageDimensions[0] }, (_, d) =>
-				Array.from({ length: imageDimensions[1] }, (_, h) =>
-					dataArray.slice(
-						(d * imageDimensions[1] * imageDimensions[2]) + (h * imageDimensions[2]),
-						(d * imageDimensions[1] * imageDimensions[2]) + ((h + 1) * imageDimensions[2])
-					)
-				)
-			);
-		} else {
-			throw new Error("Only 2D and 3D arrays are supported");
-		}
-	}
 
 	static isDIALSExpt(file, content){
 		const fileExt = file.name.split(".").pop() ;
@@ -116,6 +77,48 @@ export class ExptParser{
 
 		}catch(ex){
 			return false;
+		}
+	}
+
+	static decompressImageData(msg) {
+		// Assumes msg is a decoded MessagePack object with compressed binary data
+		const { data, shape, dtype } = msg;
+
+		const compressed = new Uint8Array(data);
+		const decompressed = pako.inflate(compressed); 
+
+		// Determine TypedArray type
+		let TypedArray;
+		if (dtype === "float32") {
+			TypedArray = Float32Array;
+		} else if (dtype === "float64") {
+			TypedArray = Float64Array;
+		} else if (dtype === "int32") {
+			TypedArray = Int32Array;
+		} else {
+			throw new Error("Unsupported data type");
+		}
+
+		const dataArray = new TypedArray(decompressed.buffer);
+
+		// Reshape into 2D or 3D array
+		if (shape.length === 2) {
+			const [height, width] = shape;
+			return Array.from({ length: height }, (_, y) =>
+				dataArray.slice(y * width, (y + 1) * width)
+			);
+		} else if (shape.length === 3) {
+			const [depth, height, width] = shape;
+			return Array.from({ length: depth }, (_, d) =>
+				Array.from({ length: height }, (_, h) =>
+					dataArray.slice(
+						(d * height * width) + (h * width),
+						(d * height * width) + ((h + 1) * width)
+					)
+				)
+			);
+		} else {
+			throw new Error("Only 2D and 3D arrays are supported");
 		}
 	}
 
@@ -186,12 +189,12 @@ export class ExptParser{
 		}
 	}
 
-	parseImageData(imageData, panelIdx, exptID, imageDimensions){
-		this.experiments[exptID].parseImageData(imageData, panelIdx, imageDimensions);
+	parseImageData(imageData, panelIdx, exptID){
+		this.experiments[exptID].parseImageData(imageData, panelIdx);
 	}
 
-	parseExptImageData(imageData, exptID, imageDimensions){
-		this.experiments[exptID].parseExptImageData(imageData, imageDimensions);
+	parseExptImageData(imageData, exptID){
+		this.experiments[exptID].parseExptImageData(imageData);
 	}
 
 	getImageFilenames(idx){
