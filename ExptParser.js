@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import pako from 'pako';
+import { decode } from "@ygoe/msgpack";
 
 
 export class Experiment{
@@ -81,13 +82,13 @@ export class ExptParser{
 	}
 
 	static decompressImageData(msg) {
-		// Assumes msg is a decoded MessagePack object with compressed binary data
-		const { data, shape, dtype } = msg;
 
-		const compressed = new Uint8Array(data);
-		const decompressed = pako.inflate(compressed); 
+		// Assumes msg is a Msgpack object
+		msg = decode(msg);
+		const { data: compressedData, shape, dtype } = msg;
 
-		// Determine TypedArray type
+		const decompressed = pako.inflate(compressedData);
+
 		let TypedArray;
 		if (dtype === "float32") {
 			TypedArray = Float32Array;
@@ -101,7 +102,7 @@ export class ExptParser{
 
 		const dataArray = new TypedArray(decompressed.buffer);
 
-		// Reshape into 2D or 3D array
+		// Reshape to 2D or 3D
 		if (shape.length === 2) {
 			const [height, width] = shape;
 			return Array.from({ length: height }, (_, y) =>
