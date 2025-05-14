@@ -83,33 +83,48 @@ export class ExptParser{
 
 	static decompressImageData(msg) {
 
-		// Assumes msg is a Msgpack object
+		// Assumes msg is a Msgpack object of a compressed array
+
 		msg = decode(msg);
 		const { data: compressedData, shape, dtype } = msg;
 
 		const decompressed = pako.inflate(compressedData);
 
 		let TypedArray;
-		if (dtype === "float32") {
-			TypedArray = Float32Array;
-		} else if (dtype === "float64") {
-			TypedArray = Float64Array;
-		} else if (dtype === "int32") {
-			TypedArray = Int32Array;
-		} else {
-			throw new Error("Unsupported data type");
+		switch (dtype) {
+			case "float32":
+				TypedArray = Float32Array;
+				break;
+			case "float64":
+				TypedArray = Float64Array;
+				break;
+			case "int32":
+				TypedArray = Int32Array;
+				break;
+			default:
+				throw new Error(`Unsupported data type: ${dtype}`);
 		}
 
-		const dataArray = new TypedArray(decompressed.buffer);
+		const dataArray = new TypedArray(
+			decompressed.buffer,
+			decompressed.byteOffset,
+			decompressed.byteLength / TypedArray.BYTES_PER_ELEMENT
+		);
 
-		// Reshape to 2D or 3D
+		// Reshape
 		if (shape.length === 2) {
 			const [height, width] = shape;
+			if (dataArray.length !== height * width) {
+				throw new Error("Data length mismatch for 2D reshape");
+			}
 			return Array.from({ length: height }, (_, y) =>
 				dataArray.slice(y * width, (y + 1) * width)
 			);
 		} else if (shape.length === 3) {
 			const [depth, height, width] = shape;
+			if (dataArray.length !== depth * height * width) {
+				throw new Error("Data length mismatch for 3D reshape");
+			}
 			return Array.from({ length: depth }, (_, d) =>
 				Array.from({ length: height }, (_, h) =>
 					dataArray.slice(
