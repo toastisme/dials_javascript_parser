@@ -48,7 +48,7 @@ export class ReflParser{
 	};
 
 	parseReflectionTableFromJSONMsgpack = (msgpackData) => {
-		const binaryData = Buffer.from(msgpackData, 'base64');
+		const binaryData = Uint8Array.from(atob(msgpackData), c => c.charCodeAt(0));
 		const decoded = decode(binaryData);
 		this.refl = decoded[2]["data"];
 		this.rawReflData = msgpackData;
