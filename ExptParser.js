@@ -1,6 +1,5 @@
 import * as THREE from 'three';
-import pako from 'pako';
-import { decode } from "@ygoe/msgpack";
+import LZ4 from 'lz4js';
 
 
 export class Experiment{
@@ -83,15 +82,15 @@ export class ExptParser{
 
 	static decompressImageData(msg) {
 
-		// Assumes msg is a Msgpack object of a compressed array
-
-		msg = decode(msg);
 		const { data: compressedData, shape, dtype } = msg;
 
-		const decompressed = pako.inflate(compressedData);
+		const decompressed = LZ4.decompress(new Uint8Array(compressedData));
 
 		let TypedArray;
 		switch (dtype) {
+			case "float16":
+				TypedArray = Float16Array;
+				break;
 			case "float32":
 				TypedArray = Float32Array;
 				break;
@@ -117,15 +116,16 @@ export class ExptParser{
 			if (dataArray.length !== height * width) {
 				throw new Error("Data length mismatch for 2D reshape");
 			}
-			return Array.from({ length: height }, (_, y) =>
+			const result = Array.from({ length: height }, (_, y) =>
 				dataArray.slice(y * width, (y + 1) * width)
 			);
+			return result;
 		} else if (shape.length === 3) {
 			const [depth, height, width] = shape;
 			if (dataArray.length !== depth * height * width) {
 				throw new Error("Data length mismatch for 3D reshape");
 			}
-			return Array.from({ length: depth }, (_, d) =>
+			const result = Array.from({ length: depth }, (_, d) =>
 				Array.from({ length: height }, (_, h) =>
 					dataArray.slice(
 						(d * height * width) + (h * width),
@@ -133,6 +133,7 @@ export class ExptParser{
 					)
 				)
 			);
+			return result;
 		} else {
 			throw new Error("Only 2D and 3D arrays are supported");
 		}
