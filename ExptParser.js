@@ -86,29 +86,33 @@ export class ExptParser{
 
 		const decompressed = LZ4.decompress(new Uint8Array(compressedData));
 
-		let TypedArray;
-		switch (dtype) {
-			case "float16":
-				TypedArray = Float16Array;
-				break;
-			case "float32":
-				TypedArray = Float32Array;
-				break;
-			case "float64":
-				TypedArray = Float64Array;
-				break;
-			case "int32":
-				TypedArray = Int32Array;
-				break;
-			default:
-				throw new Error(`Unsupported data type: ${dtype}`);
+		let dataArray;
+		if (dtype === "float16") {
+			const uint16 = new Uint16Array(decompressed.buffer, decompressed.byteOffset, decompressed.byteLength / 2);
+			dataArray = new Float32Array(uint16.length);
+			for (let i = 0; i < uint16.length; i++) {
+				const h = uint16[i];
+				const exp = (h >> 10) & 0x1f;
+				const frac = h & 0x3ff;
+				const sign = h >> 15 ? -1 : 1;
+				if (exp === 0) dataArray[i] = sign * 5.9604644775390625e-8 * frac;
+				else if (exp === 31) dataArray[i] = frac ? NaN : sign * Infinity;
+				else dataArray[i] = sign * Math.pow(2, exp - 15) * (1 + frac / 1024);
+			}
+		} else {
+			let TypedArray;
+			switch (dtype) {
+				case "float32": TypedArray = Float32Array; break;
+				case "float64": TypedArray = Float64Array; break;
+				case "int32":   TypedArray = Int32Array;   break;
+				default: throw new Error(`Unsupported data type: ${dtype}`);
+			}
+			dataArray = new TypedArray(
+				decompressed.buffer,
+				decompressed.byteOffset,
+				decompressed.byteLength / TypedArray.BYTES_PER_ELEMENT
+			);
 		}
-
-		const dataArray = new TypedArray(
-			decompressed.buffer,
-			decompressed.byteOffset,
-			decompressed.byteLength / TypedArray.BYTES_PER_ELEMENT
-		);
 
 		// Reshape
 		if (shape.length === 2) {
